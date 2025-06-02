@@ -1,0 +1,31 @@
+:root{
+    box-sizing: border-box;
+
+    --bg-color: black;
+    --container-border: rgb(214, 210, 210);
+    --cell-border: rgba(241, 237, 237, 0.768);
+}
+
+body{
+    height: 100vh;
+    margin: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: var(--bg-color);
+}
+
+#container {
+    display: grid;
+    height: 600px;
+    width: 600px;
+    border: 2px solid var(--container-border);
+
+    grid-template: repeat(16, 1fr) / repeat(16, 1fr);
+}
+
+.cell{
+    border: 1px solid var(--cell-border);
+}
