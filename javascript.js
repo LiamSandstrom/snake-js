@@ -2,6 +2,15 @@
 const container = document.querySelector("#container");
 const cells = [];
 
+/**
+ * TODO:
+ * fix going into wall = come out other side
+ * make snake cells use class instead of just bg
+ * lose when going in to yourself
+ * spawn apples at random squares
+ * make apples spawn with more logic
+ **/
+
 //----- Snake -----//
 let length = 3;
 let currCords;
@@ -17,7 +26,7 @@ function beginPlay() {
 
   createSnake();
   //tick();
-  setInterval(() => tick(), 300);
+  setInterval(() => tick(), 100);
 }
 
 //----- Tick -----//
@@ -69,50 +78,70 @@ function move() {
 
   switch (dir) {
     case "r":
-      cells.at(cordsToIndex(x, y + 1)).style.backgroundColor = "yellow";
+      if (y + 1 > 15) {
+        cells.at(cordsToIndex(x, 0)).style.backgroundColor = "yellow";
+        snakeCords.push([x, 0]);
+      } else {
+        cells.at(cordsToIndex(x, y + 1)).style.backgroundColor = "yellow";
+        snakeCords.push([x, y + 1]);
+      }
       cells.at(cordsToIndex(endX, endY)).style.backgroundColor = "black";
       snakeCords.shift();
-      snakeCords.push([x, y + 1]);
       break;
 
     case "l":
-      cells.at(cordsToIndex(x, y - 1)).style.backgroundColor = "yellow";
+      if (y - 1 < 0) {
+        cells.at(cordsToIndex(x, 15)).style.backgroundColor = "yellow";
+        snakeCords.push([x, 15]);
+      } else {
+        cells.at(cordsToIndex(x, y - 1)).style.backgroundColor = "yellow";
+        snakeCords.push([x, y - 1]);
+      }
       cells.at(cordsToIndex(endX, endY)).style.backgroundColor = "black";
       snakeCords.shift();
-      snakeCords.push([x, y - 1]);
       break;
 
     case "u":
-      cells.at(cordsToIndex(x - 1, y)).style.backgroundColor = "yellow";
+      if (x - 1 < 0) {
+        cells.at(cordsToIndex(15, y)).style.backgroundColor = "yellow";
+        snakeCords.push([15, y]);
+      } else {
+        cells.at(cordsToIndex(x - 1, y)).style.backgroundColor = "yellow";
+        snakeCords.push([x - 1, y]);
+      }
       cells.at(cordsToIndex(endX, endY)).style.backgroundColor = "black";
       snakeCords.shift();
-      snakeCords.push([x - 1, y]);
       break;
 
     case "d":
-      cells.at(cordsToIndex(x + 1, y)).style.backgroundColor = "yellow";
+      if (x + 1 > 15) {
+        cells.at(cordsToIndex(0, y)).style.backgroundColor = "yellow";
+        snakeCords.push([0, y]);
+      } else {
+        cells.at(cordsToIndex(x + 1, y)).style.backgroundColor = "yellow";
+        snakeCords.push([x + 1, y]);
+      }
       cells.at(cordsToIndex(endX, endY)).style.backgroundColor = "black";
       snakeCords.shift();
-      snakeCords.push([x + 1, y]);
       break;
   }
 
   window.addEventListener("keydown", (e) => {
     switch (e.key) {
       case "d":
-        if(lastDir == "l") return;
+        if (lastDir == "l") return;
         dir = "r";
         break;
       case "a":
-        if(lastDir == "r") return;
+        if (lastDir == "r") return;
         dir = "l";
         break;
       case "w":
-        if(lastDir == "d") return;
+        if (lastDir == "d") return;
         dir = "u";
         break;
       case "s":
-        if(lastDir == "u") return;
+        if (lastDir == "u") return;
         dir = "d";
         break;
     }
