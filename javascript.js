@@ -1,17 +1,17 @@
 //----- Grid stuff -----//
 const container = document.querySelector("#container");
 const cells = [];
+let tickRef;
 
 /**
  * TODO:
- * lose when going in to yourself
  * spawn apples at random squares
  * make apples spawn with more logic
  * worm-whole
  **/
 
 //----- Snake -----//
-let length = 3;
+let length = 5;
 let currCords;
 const snakeCords = [];
 let dir = "r";
@@ -25,13 +25,13 @@ function beginPlay() {
 
   createSnake();
   //tick();
-  setInterval(() => tick(), 100);
+  tickRef = setInterval(() => tick(), 100);
 }
 
 //----- Tick -----//
 function tick() {
-  move();
   console.log("tick");
+  move();
 }
 
 function fillCells() {
@@ -150,10 +150,25 @@ function move() {
 
   function cellToSnake(x, y){
     if(x < 0 || x > 15 || y < 0 || y > 15) return;
+    if(snakeCollision(x, y)) return;
+
     cells.at(cordsToIndex(x, y)).classList.add("snake");
   } 
 
   function removeSnakeCell(x, y){
     if(x < 0 || x > 15 || y < 0 || y > 15) return;
     cells.at(cordsToIndex(x, y)).classList.remove("snake");
+  }
+
+  function snakeCollision(x, y){
+    if(cells.at(cordsToIndex(x, y)).classList.contains("snake")){
+        die();
+        return true;
+    }
+    return false;
+  }
+
+  function die(){
+    clearInterval(tickRef);
+    console.log("DIE");
   }
