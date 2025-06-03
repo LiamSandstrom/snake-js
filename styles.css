@@ -29,3 +29,7 @@ body{
 .cell{
     border: 1px solid var(--cell-border);
 }
+
+.snake{
+    background-color: yellow;
+}

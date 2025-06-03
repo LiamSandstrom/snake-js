@@ -4,11 +4,10 @@ const cells = [];
 
 /**
  * TODO:
- * fix going into wall = come out other side
- * make snake cells use class instead of just bg
  * lose when going in to yourself
  * spawn apples at random squares
  * make apples spawn with more logic
+ * worm-whole
  **/
 
 //----- Snake -----//
@@ -49,7 +48,7 @@ function fillCells() {
 function createSnake() {
   const startPos = 6;
   for (let y = startPos; y < startPos + length; y++) {
-    cells.at(cordsToIndex(7, y)).style.backgroundColor = "yellow";
+    cellToSnake(7, y);
     snakeCords.push([7, y]);
   }
 }
@@ -79,49 +78,49 @@ function move() {
   switch (dir) {
     case "r":
       if (y + 1 > 15) {
-        cells.at(cordsToIndex(x, 0)).style.backgroundColor = "yellow";
+        cellToSnake(x, 0);
         snakeCords.push([x, 0]);
       } else {
-        cells.at(cordsToIndex(x, y + 1)).style.backgroundColor = "yellow";
+        cellToSnake(x, y + 1);
         snakeCords.push([x, y + 1]);
       }
-      cells.at(cordsToIndex(endX, endY)).style.backgroundColor = "black";
+      removeSnakeCell(endX, endY);
       snakeCords.shift();
       break;
 
     case "l":
       if (y - 1 < 0) {
-        cells.at(cordsToIndex(x, 15)).style.backgroundColor = "yellow";
+        cellToSnake(x, 15);
         snakeCords.push([x, 15]);
       } else {
-        cells.at(cordsToIndex(x, y - 1)).style.backgroundColor = "yellow";
+        cellToSnake(x, y - 1);
         snakeCords.push([x, y - 1]);
       }
-      cells.at(cordsToIndex(endX, endY)).style.backgroundColor = "black";
+      removeSnakeCell(endX, endY);
       snakeCords.shift();
       break;
 
     case "u":
       if (x - 1 < 0) {
-        cells.at(cordsToIndex(15, y)).style.backgroundColor = "yellow";
+        cellToSnake(15, y);
         snakeCords.push([15, y]);
       } else {
-        cells.at(cordsToIndex(x - 1, y)).style.backgroundColor = "yellow";
+        cellToSnake(x - 1, y);
         snakeCords.push([x - 1, y]);
       }
-      cells.at(cordsToIndex(endX, endY)).style.backgroundColor = "black";
+      removeSnakeCell(endX, endY);
       snakeCords.shift();
       break;
 
     case "d":
       if (x + 1 > 15) {
-        cells.at(cordsToIndex(0, y)).style.backgroundColor = "yellow";
+        cellToSnake(0, y);
         snakeCords.push([0, y]);
       } else {
-        cells.at(cordsToIndex(x + 1, y)).style.backgroundColor = "yellow";
+        cellToSnake(x + 1, y);
         snakeCords.push([x + 1, y]);
       }
-      cells.at(cordsToIndex(endX, endY)).style.backgroundColor = "black";
+      removeSnakeCell(endX, endY);
       snakeCords.shift();
       break;
   }
@@ -146,4 +145,15 @@ function move() {
         break;
     }
   });
+
 }
+
+  function cellToSnake(x, y){
+    if(x < 0 || x > 15 || y < 0 || y > 15) return;
+    cells.at(cordsToIndex(x, y)).classList.add("snake");
+  } 
+
+  function removeSnakeCell(x, y){
+    if(x < 0 || x > 15 || y < 0 || y > 15) return;
+    cells.at(cordsToIndex(x, y)).classList.remove("snake");
+  }
