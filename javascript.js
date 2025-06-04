@@ -3,10 +3,11 @@ const container = document.querySelector("#container");
 const cells = [];
 let tickRef;
 
+const scoreboard = document.querySelector(".scoreboard");
+const scoreText = document.querySelector(".score");
+const highScoreText = document.querySelector(".high-score");
 /**
  * TODO:
- * spawn apples at random squares
- * make apples spawn with more logic
  * worm-whole
  **/
 
@@ -16,21 +17,21 @@ let currCords;
 const snakeCords = [];
 let dir = "r";
 let lastDir = "r";
+let score = 0;
 
 //----- Start -----//
 beginPlay();
 function beginPlay() {
   fillCells();
-  console.log(cells);
 
   createSnake();
   //tick();
-  tickRef = setInterval(() => tick(), 100);
+  tickRef = setInterval(() => tick(), 90);
+  spawnApple();
 }
 
 //----- Tick -----//
 function tick() {
-  console.log("tick");
   move();
 }
 
@@ -73,8 +74,6 @@ function move() {
   const endX = snakeCords[0].at(0);
   const endY = snakeCords[0].at(1);
 
-  console.log(snakeCords);
-
   switch (dir) {
     case "r":
       if (y + 1 > 15) {
@@ -85,7 +84,6 @@ function move() {
         snakeCords.push([x, y + 1]);
       }
       removeSnakeCell(endX, endY);
-      snakeCords.shift();
       break;
 
     case "l":
@@ -97,7 +95,6 @@ function move() {
         snakeCords.push([x, y - 1]);
       }
       removeSnakeCell(endX, endY);
-      snakeCords.shift();
       break;
 
     case "u":
@@ -109,7 +106,6 @@ function move() {
         snakeCords.push([x - 1, y]);
       }
       removeSnakeCell(endX, endY);
-      snakeCords.shift();
       break;
 
     case "d":
@@ -121,7 +117,6 @@ function move() {
         snakeCords.push([x + 1, y]);
       }
       removeSnakeCell(endX, endY);
-      snakeCords.shift();
       break;
   }
 
@@ -145,30 +140,90 @@ function move() {
         break;
     }
   });
-
 }
 
-  function cellToSnake(x, y){
-    if(x < 0 || x > 15 || y < 0 || y > 15) return;
-    if(snakeCollision(x, y)) return;
+function cellToSnake(x, y) {
+  if (x < 0 || x > 15 || y < 0 || y > 15) return;
+  if (snakeCollision(x, y)) return;
 
-    cells.at(cordsToIndex(x, y)).classList.add("snake");
-  } 
+  cells.at(cordsToIndex(x, y)).classList.add("snake");
+}
 
-  function removeSnakeCell(x, y){
-    if(x < 0 || x > 15 || y < 0 || y > 15) return;
-    cells.at(cordsToIndex(x, y)).classList.remove("snake");
+function removeSnakeCell(x, y) {
+  if (x < 0 || x > 15 || y < 0 || y > 15) return;
+  if (snakeCords.length <= length) return;
+  cells.at(cordsToIndex(x, y)).classList.remove("snake");
+  snakeCords.shift();
+}
+
+function snakeCollision(x, y) {
+  if (cells.at(cordsToIndex(x, y)).classList.contains("snake")) {
+    die();
+    return true;
   }
-
-  function snakeCollision(x, y){
-    if(cells.at(cordsToIndex(x, y)).classList.contains("snake")){
-        die();
-        return true;
-    }
-    return false;
+  if (cells.at(cordsToIndex(x, y)).classList.contains("apple")) {
+    length++;
+    cells.at(cordsToIndex(x, y)).classList.remove("apple");
+    spawnApple();
+    score += 100;
   }
+  return false;
+}
 
-  function die(){
-    clearInterval(tickRef);
-    console.log("DIE");
+function die() {
+  clearInterval(tickRef);
+  animateScoreboard();
+}
+
+function spawnApple() {
+  const snakeHead = snakeCords.at(snakeCords.length - 1);
+  let appleX;
+  let appleY;
+  if (snakeHead.at(0) > 7) {
+    appleX = randNumb(1, 4);
+  } else {
+    appleX = randNumb(10, 14);
   }
+  if (snakeHead.at(1) > 7) {
+    appleY = randNumb(1, 4);
+  } else {
+    appleY = randNumb(10, 14);
+  }
+  cells.at(cordsToIndex(appleX, appleY)).classList.add("apple");
+}
+
+function randNumb(min, max) {
+  let numb = Math.floor(Math.random() * (max + 1));
+  if (numb < min) {
+    return min;
+  }
+  return numb;
+}
+
+function animateScoreboard() {
+  scoreboard.animate(
+    [
+        { transform: "scale(0)", offset: 0 },
+        { transform: "scale(1.2)", offset: 0.4 },
+        { transform: "scale(0.9)", offset: 0.8 },
+        { transform: "scale(1)", offset: 1 },
+    ], 
+    {
+        duration: 400,
+        fill:"forwards"
+    });
+    setTimeout(() => animateScore(), 300)
+}
+
+function animateScore(){
+
+    const timerRef = setInterval(() => {
+        const currScore = parseInt(scoreText.textContent);
+        const newScore = currScore + 10;
+        scoreText.textContent = newScore;
+        if(newScore >= score){
+            clearInterval(timerRef)
+        }
+        
+    }, 14);
+}

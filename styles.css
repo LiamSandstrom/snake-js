@@ -4,6 +4,9 @@
     --bg-color: black;
     --container-border: rgb(214, 210, 210);
     --cell-border: rgba(241, 237, 237, 0.768);
+    --snake-color: rgb(29, 210, 80);
+    --apple-color: rgb(252, 49, 49);
+    --gold-color: rgb(255, 183, 0);
 }
 
 body{
@@ -19,11 +22,13 @@ body{
 
 #container {
     display: grid;
-    height: 600px;
-    width: 600px;
+    height: 350px;
+    width: 350px;
+    flex-shrink: 0;
     border: 2px solid var(--container-border);
 
     grid-template: repeat(16, 1fr) / repeat(16, 1fr);
+
 }
 
 .cell{
@@ -31,5 +36,57 @@ body{
 }
 
 .snake{
-    background-color: yellow;
+    background-color: var(--snake-color);
+}
+
+.apple{
+    background-color: var(--apple-color);
+}
+
+.scoreboard{
+    transform: scale(0);
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    
+    height: 250px;
+    width: 350px;
+    z-index: 1;
+
+    border: 5px solid rgb(255, 255, 255);
+    background-color: rgba(0, 0, 0, 0.678);
+    color: white;
+    border-radius: 20px;
+    font-family: 'Press Start 2P', monospace;
+}
+
+.scoreboard h1,h2,h3{
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.scoreboard div{
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.high-score-text{
+    color: var(--gold-color)
+}
+
+.score-text{
+    color: rgb(255, 234, 0);
+}
+
+@media only screen and (min-width: 605px){
+    #container {
+        width: 450px;
+        height: 450px;
+    }
 }
