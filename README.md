@@ -4,6 +4,7 @@ Snake with wormhole mechanic 🐍
 Link: https://liamsandstrom.github.io/snake-js/
 
 Move:
+
 [W = UP]
 
 [A = LEFT]
