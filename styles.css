@@ -1,148 +1,160 @@
-:root{
-    box-sizing: border-box;
+:root {
+  box-sizing: border-box;
 
-    --bg-color: black;
-    --container-border: rgb(214, 210, 210);
-    --cell-border: rgba(241, 237, 237, 0.768);
-    --snake-color: rgb(29, 210, 80);
-    --apple-color: rgb(252, 49, 49);
-    --gold-color: rgb(255, 183, 0);
-    --info-color: rgba(0, 0, 255, 0.566);
+  --bg-color: black;
+  --container-border: rgb(214, 210, 210);
+  --cell-border: rgba(241, 237, 237, 0.768);
+  --snake-color: rgb(29, 210, 80);
+  --apple-color: rgb(252, 49, 49);
+  --gold-color: rgb(255, 183, 0);
+  --info-color: rgba(0, 0, 255, 0.566);
 }
 
-body{
-    height: 100vh;
-    margin: 0;
+body {
+  height: 100vh;
+  margin: 0;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-    font-family: 'Press Start 2P', monospace;
-    background-color: var(--bg-color);
+  font-family: "Press Start 2P", monospace;
+  background-color: var(--bg-color);
 }
 
 #container {
-    display: grid;
-    height: 350px;
-    width: 350px;
-    flex-shrink: 0;
-    border: 2px solid var(--container-border);
+  display: grid;
+  height: 350px;
+  width: 350px;
+  flex-shrink: 0;
+  border: 2px solid var(--container-border);
 
-    grid-template: repeat(16, 1fr) / repeat(16, 1fr);
-
+  grid-template: repeat(16, 1fr) / repeat(16, 1fr);
 }
 
-.cell{
-    border: 1px solid var(--cell-border);
+.cell {
+  border: 1px solid var(--cell-border);
 }
 
-.snake{
-    background-color: var(--snake-color);
+.snake {
+  background-color: var(--snake-color);
 }
 
-.apple{
-    background-color: var(--apple-color);
+.apple {
+  background-color: var(--apple-color);
 }
 
-.scoreboard{
-    transform: scale(0);
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    
-    height: 250px;
-    width: 350px;
-    z-index: 1;
+.scoreboard {
+  transform: scale(0);
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 
-    border: 5px solid rgb(255, 255, 255);
-    background-color: rgba(0, 0, 0, 0.678);
-    color: white;
-    border-radius: 20px;
+  height: 220px;
+  width: 300px;
+  z-index: 1;
+
+  border: 2px solid rgba(226, 223, 223, 0.263);
+  background-color: rgba(0, 0, 0, 0.678);
+  color: white;
+
+  will-change: transform;
+
+  transition: transform 300ms;
 }
 
-.scoreboard h1,h2,h3{
-    margin: 0;
-    font-size: 1.2rem;
+.scoreboard h1,
+h2,
+h3 {
+  margin: 0;
+  font-size: 1.2rem;
 }
 
-.scoreboard div{
-    height: 80px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 10px;
+.scoreboard div {
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.high-score-text{
-    color: var(--gold-color)
+.high-score-text {
+  color: var(--gold-color);
 }
 
-.score-text{
-    color: rgb(255, 234, 0);
+.score-text {
+  color: rgb(255, 234, 0);
 }
 
-.info-btn{
-    position: fixed;
-    top: 20px;
-    right: 20px;
+.info-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
 
-    width: 40px;
-    height: 40px;
+  width: 40px;
+  height: 40px;
 
-    border-radius: 50px;
-    border: none;
+  border-radius: 50px;
+  border: none;
 
-    transition: scale 300ms;
-    font-family: 'Press Start 2P', monospace;
+  transition: scale 300ms;
+  font-family: "Press Start 2P", monospace;
 }
 
-.info-btn:hover{
-    scale: 1.1;
+.info-btn:hover {
+  scale: 1.1;
 }
 
-.info-panel{
-    visibility: collapse;
-    position: fixed;
-    z-index: 100;
+.info-panel {
+  visibility: collapse;
+  position: fixed;
+  z-index: 100;
 
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-    padding: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 50px;
 
-    color: var(--container-border);
-    background-color: var(--info-color);
-    border: 1px solid rgba(217, 217, 219, 0.355);
+  color: var(--container-border);
+  background-color: var(--info-color);
+  border: 1px solid rgba(217, 217, 219, 0.355);
 }
 
 .info-panel h2 {
-    font-size: 0.9rem;
+  font-size: 0.9rem;
 }
 
 .info-close-btn {
-    height: 25px;
-    width: 25px;
+  height: 25px;
+  width: 25px;
 
-    position: absolute;
-    top: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 
-    font-family: 'Press Start 2P', monospace;
-    background-color: rgb(232, 61, 61);
+  font-family: "Press Start 2P", monospace;
+  background-color: rgb(232, 61, 61);
 }
 
+@media only screen and (min-width: 605px) {
+  #container {
+    width: 450px;
+    height: 450px;
+  }
 
-@media only screen and (min-width: 605px){
-    #container {
-        width: 450px;
-        height: 450px;
-    }
-
-    .info-panel h2 {
-        font-size: 1.2rem;
-    }
+  .info-panel h2 {
+    font-size: 1.1rem;
+  }
+  .scoreboard{
+    padding: 30px;
+    gap: 20px;
+  }
+  .scoreboard h1,
+  h2,
+  h3 {
+    font-size: 1.4rem;
+  }
 }

@@ -14,7 +14,7 @@ const infoPanel = document.querySelector(".info-panel");
 const infoCloseBtn = document.querySelector(".info-close-btn");
 
 //----- Snake vars -----//
-let length = 5;
+let length = 3;
 let currCords;
 const snakeCords = [];
 let dir = "r";
