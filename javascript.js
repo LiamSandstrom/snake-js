@@ -23,11 +23,21 @@ let score = 0;
 let jumpDist = 3;
 let newHighScore = false;
 
+//const snakeLight = getComputedStyle(document.documentElement).getPropertyValue("--snake-light").trim();
+//const snakeColor = document.documentElement.style.getPropertyValue("--snake-color");
+//const wormholeColor = document.documentElement.style.getPropertyValue("--snake-wormhole-color");
+let isWormholeMode = false;
+let wormholeEnd = 0;
+const normalHue = 109;    // Green hue
+const wormholeHue = 296;  // Purple hue
+const normalLight = 55;   // Normal lightness
+const brightLight = 70;   // Pickup lightness
+
 //----- Start -----//
 beginPlay();
 function beginPlay() {
   fillCells();
-
+  updateSnakeColor();
   createSnake();
   //tick();
   tickRef = setInterval(() => tick(), 90);
@@ -59,6 +69,12 @@ function createSnake() {
     cellToSnake(7, y);
     snakeCords.push([7, y]);
   }
+}
+
+function updateSnakeColor(lightness = normalLight) {
+    const hue = isWormholeMode ? wormholeHue : normalHue;
+    const color = `hsl(${hue}, 78%, ${lightness}%)`;
+    document.documentElement.style.setProperty("--snake-color", color);
 }
 
 //---- Movement ----//
@@ -118,19 +134,23 @@ function move() {
 }
 
 function wormHole() {
+    if(isWormholeMode) return;
   console.log(snakeCords[snakeCords.length - 1].at(0));
   const currX = snakeCords[snakeCords.length - 1].at(0);
   const currY = snakeCords[snakeCords.length - 1].at(1);
   cells.at(cordsToIndex(currX, currY)).classList.remove("snake");
   snakeCords.pop();
+  wormHoleAnimation();
   switch (dir) {
     case "r":
       if (currY + jumpDist > 15) {
         cellToSnake(currX, currY + jumpDist - 15);
         snakeCords.push([currX, currY + jumpDist - 15]);
+        wormholeEnd = [currX, currY + jumpDist - 15];
       } else {
         cellToSnake(currX, currY + jumpDist);
         snakeCords.push([currX, currY + jumpDist]);
+        wormholeEnd = [currX, currY + jumpDist];
       }
       break;
 
@@ -138,9 +158,11 @@ function wormHole() {
       if (currY - jumpDist < 0) {
         cellToSnake(currX, currY - jumpDist + 15);
         snakeCords.push([currX, currY - jumpDist + 15]);
+        wormholeEnd = [currX, currY - jumpDist + 15];
       } else {
         cellToSnake(currX, currY - jumpDist);
         snakeCords.push([currX, currY - jumpDist]);
+        wormholeEnd = [currX, currY - jumpDist];
       }
       break;
 
@@ -148,9 +170,11 @@ function wormHole() {
       if (currX - jumpDist < 0) {
         cellToSnake(currX - jumpDist + 15, currY);
         snakeCords.push([currX - jumpDist + 15, currY]);
+        wormholeEnd = [currX - jumpDist + 15, currY];
       } else {
         cellToSnake(currX - jumpDist, currY);
         snakeCords.push([currX - jumpDist, currY]);
+        wormholeEnd = [currX - jumpDist, currY];
       }
       break;
 
@@ -158,9 +182,11 @@ function wormHole() {
       if (currX + jumpDist > 15) {
         cellToSnake(currX + jumpDist - 15, currY);
         snakeCords.push([currX + jumpDist - 15, currY]);
+        wormholeEnd = [currX + jumpDist - 15, currY];
       } else {
         cellToSnake(currX + jumpDist, currY);
         snakeCords.push([currX + jumpDist, currY]);
+        wormholeEnd = [currX + jumpDist, currY];
       }
       break;
   }
@@ -214,6 +240,7 @@ function cellToSnake(x, y) {
   if (snakeCollision(x, y)) return;
 
   cells.at(cordsToIndex(x, y)).classList.add("snake");
+  calcWormholeEnd();
 }
 
 function removeSnakeCell(x, y) {
@@ -234,6 +261,7 @@ function snakeCollision(x, y) {
     cells.at(cordsToIndex(x, y)).classList.remove("apple");
     spawnApple();
     score += 100;
+    pickupAnimation();
   }
   return false;
 }
@@ -273,6 +301,23 @@ function randNumb(min, max) {
     return min;
   }
   return numb;
+}
+
+function calcWormholeEnd(){
+    if(!isWormholeMode) return;
+
+    const tailX = snakeCords[0][0];
+    const tailY = snakeCords[0][1];
+    const endX = wormholeEnd[0];
+    const endY = wormholeEnd[1];
+    
+    console.log(`Tail: [${tailX}, ${tailY}]  End: [${endX}, ${endY}]`);
+    
+    if(tailX === endX && tailY === endY){
+        isWormholeMode = false;
+        updateSnakeColor();
+        console.log("Wormhole mode ended!");
+    }
 }
 
 //----- UI / Animations -----//
@@ -351,3 +396,15 @@ infoBtn.addEventListener("click", () => {
 infoCloseBtn.addEventListener("click", () => {
   infoPanel.style.visibility = "hidden";
 });
+
+function wormHoleAnimation() {
+    isWormholeMode = true;
+    updateSnakeColor();
+}
+
+function pickupAnimation() {
+    updateSnakeColor(brightLight);
+    setTimeout(() => {
+        updateSnakeColor();
+    }, 120);
+}

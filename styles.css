@@ -4,10 +4,15 @@
   --bg-color: black;
   --container-border: rgb(214, 210, 210);
   --cell-border: rgba(241, 237, 237, 0.768);
-  --snake-color: rgb(29, 210, 80);
+
+  --snake-color: hsl(109, 78%, var(--snake-light));
+  --snake-wormhole-color: hsl(296, 78%, var(--snake-light));
+  --snake-light: 55%;
+
   --apple-color: rgb(252, 49, 49);
   --gold-color: rgb(255, 183, 0);
   --info-color: rgba(0, 0, 255, 0.566);
+
 }
 
 body {
