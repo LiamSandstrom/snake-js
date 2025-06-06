@@ -3,15 +3,17 @@ const container = document.querySelector("#container");
 const cells = [];
 let tickRef;
 
+//----- Scoreboard vars -----//
 const scoreboard = document.querySelector(".scoreboard");
 const scoreText = document.querySelector(".score");
 const highScoreText = document.querySelector(".high-score");
-/**
- * TODO:
- * worm-whole
- **/
 
-//----- Snake -----//
+//----- Info Panel vars -----//
+const infoBtn = document.querySelector(".info-btn");
+const infoPanel = document.querySelector(".info-panel");
+const infoCloseBtn = document.querySelector(".info-close-btn");
+
+//----- Snake vars -----//
 let length = 5;
 let currCords;
 const snakeCords = [];
@@ -39,6 +41,7 @@ function tick() {
   move();
 }
 
+//----- pre-game -----//
 function fillCells() {
   for (let x = 0; x < 16; x++) {
     for (let y = 0; y < 16; y++) {
@@ -58,18 +61,7 @@ function createSnake() {
   }
 }
 
-function indexToCords(value) {
-  const rowCalc = (value % 16) + "";
-  const x = parseFloat(rowCalc.at(0)) - 1;
-  const y = value - x * 16;
-
-  return [x, y];
-}
-
-function cordsToIndex(x, y) {
-  return x * 16 + y;
-}
-
+//---- Movement ----//
 function move() {
   lastDir = dir;
   const x = snakeCords[snakeCords.length - 1].at(0);
@@ -123,167 +115,6 @@ function move() {
       removeSnakeCell(endX, endY);
       break;
   }
-
-  window.addEventListener("keydown", (e) => {
-    switch (e.key) {
-      case "d":
-        if (lastDir == "l") return;
-        dir = "r";
-        break;
-      case "a":
-        if (lastDir == "r") return;
-        dir = "l";
-        break;
-      case "w":
-        if (lastDir == "d") return;
-        dir = "u";
-        break;
-      case "s":
-        if (lastDir == "u") return;
-        dir = "d";
-        break;
-    }
-  });
-}
-
-window.addEventListener("keyup", (e) => {
-  switch (e.key) {
-    case " ":
-      wormHole();
-      break;
-  }
-});
-
-function cellToSnake(x, y) {
-  if (x < 0 || x > 15 || y < 0 || y > 15) return;
-  if (snakeCollision(x, y)) return;
-
-  cells.at(cordsToIndex(x, y)).classList.add("snake");
-}
-
-function removeSnakeCell(x, y) {
-  if (x < 0 || x > 15 || y < 0 || y > 15) return;
-  if (snakeCords.length <= length) return;
-  cells.at(cordsToIndex(x, y)).classList.remove("snake");
-  snakeCords.shift();
-}
-
-function snakeCollision(x, y) {
-  if (cells.at(cordsToIndex(x, y)).classList.contains("snake")) {
-    die();
-    return true;
-  }
-  if (cells.at(cordsToIndex(x, y)).classList.contains("apple")) {
-    length++;
-    cells.at(cordsToIndex(x, y)).classList.remove("apple");
-    spawnApple();
-    score += 100;
-  }
-  return false;
-}
-
-function die() {
-  clearInterval(tickRef);
-  if (score > localStorage.getItem("highScore")) {
-    console.log(localStorage.getItem("highScore"))
-    localStorage.setItem("highScore", score);
-    newHighScore = true;
-  }
-  animateScoreboard();
-}
-
-function spawnApple() {
-  const snakeHead = snakeCords.at(snakeCords.length - 1);
-  let appleX;
-  let appleY;
-  if (snakeHead.at(0) > 7) {
-    appleX = randNumb(1, 4);
-  } else {
-    appleX = randNumb(10, 14);
-  }
-  if (snakeHead.at(1) > 7) {
-    appleY = randNumb(1, 4);
-  } else {
-    appleY = randNumb(10, 14);
-  }
-  cells.at(cordsToIndex(appleX, appleY)).classList.add("apple");
-}
-
-function randNumb(min, max) {
-  let numb = Math.floor(Math.random() * (max + 1));
-  if (numb < min) {
-    return min;
-  }
-  return numb;
-}
-
-function animateScoreboard() {
-  scoreboard.animate(
-    [
-      { transform: "scale(0)", offset: 0 },
-      { transform: "scale(1.2)", offset: 0.4 },
-      { transform: "scale(0.9)", offset: 0.8 },
-      { transform: "scale(1)", offset: 1 },
-    ],
-    {
-      duration: 400,
-      fill: "forwards",
-    }
-  );
-  setTimeout(() => animateScore(), 300);
-}
-
-function animateScore() {
-  const timerRef = setInterval(() => {
-    const currScore = parseInt(scoreText.textContent);
-    const newScore = currScore + 10;
-    scoreText.textContent = newScore;
-    if (newScore >= score) {
-      clearInterval(timerRef);
-      if (newHighScore) {
-        setTimeout(() => animateHighScore(), 100);
-      }
-      else{
-      scoreText.animate(
-        [
-          { transform: "scale(1)" },
-          { transform: "scale(1.2)" },
-          { transform: "scale(1.22)" },
-          { transform: "scale(1.25)" },
-          { transform: "scale(1)" },
-        ],
-        {
-          duration: 300,
-          fill: "forwards",
-        }
-      );
-      }
-    }
-  }, 14);
-}
-
-function animateHighScore() {
-  const timerRef = setInterval(() => {
-    const currScore = parseInt(highScoreText.textContent);
-    const newScore = currScore + 10;
-    highScoreText.textContent = newScore;
-    if (newScore >= score) {
-      clearInterval(timerRef);
-      highScoreText.animate(
-        [
-          { transform: "scale(1)" },
-          { transform: "scale(1.6)" },
-          { transform: "scale(1.62)" },
-          { transform: "scale(1.55)" },
-          { transform: "scale(1.1)" },
-        ],
-        {
-          duration: 300,
-          fill: "forwards",
-        }
-      );
-    }
-  }, 8);
 }
 
 function wormHole() {
@@ -334,3 +165,189 @@ function wormHole() {
       break;
   }
 }
+
+//---- Converters ----//
+function indexToCords(value) {
+  const rowCalc = (value % 16) + "";
+  const x = parseFloat(rowCalc.at(0)) - 1;
+  const y = value - x * 16;
+
+  return [x, y];
+}
+
+function cordsToIndex(x, y) {
+  return x * 16 + y;
+}
+
+//----- Input -----//
+window.addEventListener("keydown", (e) => {
+  switch (e.key) {
+    case "d":
+      if (lastDir == "l") return;
+      dir = "r";
+      break;
+    case "a":
+      if (lastDir == "r") return;
+      dir = "l";
+      break;
+    case "w":
+      if (lastDir == "d") return;
+      dir = "u";
+      break;
+    case "s":
+      if (lastDir == "u") return;
+      dir = "d";
+      break;
+  }
+});
+window.addEventListener("keyup", (e) => {
+  switch (e.key) {
+    case " ":
+      wormHole();
+      break;
+  }
+});
+
+//----- Cell manipulation -----//
+function cellToSnake(x, y) {
+  if (x < 0 || x > 15 || y < 0 || y > 15) return;
+  if (snakeCollision(x, y)) return;
+
+  cells.at(cordsToIndex(x, y)).classList.add("snake");
+}
+
+function removeSnakeCell(x, y) {
+  if (x < 0 || x > 15 || y < 0 || y > 15) return;
+  if (snakeCords.length <= length) return;
+  cells.at(cordsToIndex(x, y)).classList.remove("snake");
+  snakeCords.shift();
+}
+
+//----- Snake logic -----//
+function snakeCollision(x, y) {
+  if (cells.at(cordsToIndex(x, y)).classList.contains("snake")) {
+    die();
+    return true;
+  }
+  if (cells.at(cordsToIndex(x, y)).classList.contains("apple")) {
+    length++;
+    cells.at(cordsToIndex(x, y)).classList.remove("apple");
+    spawnApple();
+    score += 100;
+  }
+  return false;
+}
+
+function die() {
+  clearInterval(tickRef);
+  if (score > localStorage.getItem("highScore")) {
+    console.log(localStorage.getItem("highScore"));
+    localStorage.setItem("highScore", score);
+    newHighScore = true;
+  }
+  animateScoreboard();
+}
+
+//----- Appool -----//
+function spawnApple() {
+  const snakeHead = snakeCords.at(snakeCords.length - 1);
+  let appleX;
+  let appleY;
+  if (snakeHead.at(0) > 7) {
+    appleX = randNumb(1, 4);
+  } else {
+    appleX = randNumb(10, 14);
+  }
+  if (snakeHead.at(1) > 7) {
+    appleY = randNumb(1, 4);
+  } else {
+    appleY = randNumb(10, 14);
+  }
+  cells.at(cordsToIndex(appleX, appleY)).classList.add("apple");
+}
+
+//----- helpers -----//
+function randNumb(min, max) {
+  let numb = Math.floor(Math.random() * (max + 1));
+  if (numb < min) {
+    return min;
+  }
+  return numb;
+}
+
+//----- UI / Animations -----//
+function animateScoreboard() {
+  scoreboard.animate(
+    [
+      { transform: "scale(0)", offset: 0 },
+      { transform: "scale(1.2)", offset: 0.4 },
+      { transform: "scale(0.9)", offset: 0.8 },
+      { transform: "scale(1)", offset: 1 },
+    ],
+    {
+      duration: 400,
+      fill: "forwards",
+    }
+  );
+  setTimeout(() => animateScore(), 300);
+}
+
+function animateScore() {
+  const timerRef = setInterval(() => {
+    const currScore = parseInt(scoreText.textContent);
+    const newScore = currScore + 10;
+    scoreText.textContent = newScore;
+    if (newScore >= score) {
+      clearInterval(timerRef);
+      if (newHighScore) {
+        setTimeout(() => animateHighScore(), 100);
+      } else {
+        scoreText.animate(
+          [
+            { transform: "scale(1)" },
+            { transform: "scale(1.2)" },
+            { transform: "scale(1.22)" },
+            { transform: "scale(1.25)" },
+            { transform: "scale(1)" },
+          ],
+          {
+            duration: 300,
+            fill: "forwards",
+          }
+        );
+      }
+    }
+  }, 14);
+}
+
+function animateHighScore() {
+  const timerRef = setInterval(() => {
+    const currScore = parseInt(highScoreText.textContent);
+    const newScore = currScore + 10;
+    highScoreText.textContent = newScore;
+    if (newScore >= score) {
+      clearInterval(timerRef);
+      highScoreText.animate(
+        [
+          { transform: "scale(1)" },
+          { transform: "scale(1.6)" },
+          { transform: "scale(1.62)" },
+          { transform: "scale(1.55)" },
+          { transform: "scale(1.1)" },
+        ],
+        {
+          duration: 300,
+          fill: "forwards",
+        }
+      );
+    }
+  }, 8);
+}
+
+infoBtn.addEventListener("click", () => {
+  infoPanel.style.visibility = "visible";
+});
+
+infoCloseBtn.addEventListener("click", () => {
+  infoPanel.style.visibility = "hidden";
+});
