@@ -18,6 +18,8 @@ const snakeCords = [];
 let dir = "r";
 let lastDir = "r";
 let score = 0;
+let jumpDist = 3;
+let newHighScore = false;
 
 //----- Start -----//
 beginPlay();
@@ -28,6 +30,8 @@ function beginPlay() {
   //tick();
   tickRef = setInterval(() => tick(), 90);
   spawnApple();
+
+  highScoreText.textContent = localStorage.getItem("highScore");
 }
 
 //----- Tick -----//
@@ -142,6 +146,14 @@ function move() {
   });
 }
 
+window.addEventListener("keyup", (e) => {
+  switch (e.key) {
+    case " ":
+      wormHole();
+      break;
+  }
+});
+
 function cellToSnake(x, y) {
   if (x < 0 || x > 15 || y < 0 || y > 15) return;
   if (snakeCollision(x, y)) return;
@@ -172,6 +184,11 @@ function snakeCollision(x, y) {
 
 function die() {
   clearInterval(tickRef);
+  if (score > localStorage.getItem("highScore")) {
+    console.log(localStorage.getItem("highScore"))
+    localStorage.setItem("highScore", score);
+    newHighScore = true;
+  }
   animateScoreboard();
 }
 
@@ -203,27 +220,117 @@ function randNumb(min, max) {
 function animateScoreboard() {
   scoreboard.animate(
     [
-        { transform: "scale(0)", offset: 0 },
-        { transform: "scale(1.2)", offset: 0.4 },
-        { transform: "scale(0.9)", offset: 0.8 },
-        { transform: "scale(1)", offset: 1 },
-    ], 
+      { transform: "scale(0)", offset: 0 },
+      { transform: "scale(1.2)", offset: 0.4 },
+      { transform: "scale(0.9)", offset: 0.8 },
+      { transform: "scale(1)", offset: 1 },
+    ],
     {
-        duration: 400,
-        fill:"forwards"
-    });
-    setTimeout(() => animateScore(), 300)
+      duration: 400,
+      fill: "forwards",
+    }
+  );
+  setTimeout(() => animateScore(), 300);
 }
 
-function animateScore(){
-
-    const timerRef = setInterval(() => {
-        const currScore = parseInt(scoreText.textContent);
-        const newScore = currScore + 10;
-        scoreText.textContent = newScore;
-        if(newScore >= score){
-            clearInterval(timerRef)
+function animateScore() {
+  const timerRef = setInterval(() => {
+    const currScore = parseInt(scoreText.textContent);
+    const newScore = currScore + 10;
+    scoreText.textContent = newScore;
+    if (newScore >= score) {
+      clearInterval(timerRef);
+      if (newHighScore) {
+        setTimeout(() => animateHighScore(), 100);
+      }
+      else{
+      scoreText.animate(
+        [
+          { transform: "scale(1)" },
+          { transform: "scale(1.2)" },
+          { transform: "scale(1.22)" },
+          { transform: "scale(1.25)" },
+          { transform: "scale(1)" },
+        ],
+        {
+          duration: 300,
+          fill: "forwards",
         }
-        
-    }, 14);
+      );
+      }
+    }
+  }, 14);
+}
+
+function animateHighScore() {
+  const timerRef = setInterval(() => {
+    const currScore = parseInt(highScoreText.textContent);
+    const newScore = currScore + 10;
+    highScoreText.textContent = newScore;
+    if (newScore >= score) {
+      clearInterval(timerRef);
+      highScoreText.animate(
+        [
+          { transform: "scale(1)" },
+          { transform: "scale(1.6)" },
+          { transform: "scale(1.62)" },
+          { transform: "scale(1.55)" },
+          { transform: "scale(1.1)" },
+        ],
+        {
+          duration: 300,
+          fill: "forwards",
+        }
+      );
+    }
+  }, 8);
+}
+
+function wormHole() {
+  console.log(snakeCords[snakeCords.length - 1].at(0));
+  const currX = snakeCords[snakeCords.length - 1].at(0);
+  const currY = snakeCords[snakeCords.length - 1].at(1);
+  cells.at(cordsToIndex(currX, currY)).classList.remove("snake");
+  snakeCords.pop();
+  switch (dir) {
+    case "r":
+      if (currY + jumpDist > 15) {
+        cellToSnake(currX, currY + jumpDist - 15);
+        snakeCords.push([currX, currY + jumpDist - 15]);
+      } else {
+        cellToSnake(currX, currY + jumpDist);
+        snakeCords.push([currX, currY + jumpDist]);
+      }
+      break;
+
+    case "l":
+      if (currY - jumpDist < 0) {
+        cellToSnake(currX, currY - jumpDist + 15);
+        snakeCords.push([currX, currY - jumpDist + 15]);
+      } else {
+        cellToSnake(currX, currY - jumpDist);
+        snakeCords.push([currX, currY - jumpDist]);
+      }
+      break;
+
+    case "u":
+      if (currX - jumpDist < 0) {
+        cellToSnake(currX - jumpDist + 15, currY);
+        snakeCords.push([currX - jumpDist + 15, currY]);
+      } else {
+        cellToSnake(currX - jumpDist, currY);
+        snakeCords.push([currX - jumpDist, currY]);
+      }
+      break;
+
+    case "d":
+      if (currX + jumpDist > 15) {
+        cellToSnake(currX + jumpDist - 15, currY);
+        snakeCords.push([currX + jumpDist - 15, currY]);
+      } else {
+        cellToSnake(currX + jumpDist, currY);
+        snakeCords.push([currX + jumpDist, currY]);
+      }
+      break;
+  }
 }
