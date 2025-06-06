@@ -43,6 +43,10 @@ function beginPlay() {
   tickRef = setInterval(() => tick(), 90);
   spawnApple();
 
+  if(localStorage.getItem("visited") == null){
+    localStorage.setItem("highScore", 0);
+  }
+  localStorage.setItem("visited", 1);
   highScoreText.textContent = localStorage.getItem("highScore");
 }
 
